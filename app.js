@@ -22,6 +22,7 @@ const ICONS = {
   pen: '<path d="M3 17l1-4 9-9 4 4-9 9z"/><path d="M11 5l4 4"/>',
   tool: '<path d="M11 2L4 11h5l-1 7 7-9h-5z" fill="currentColor" stroke="none"/>',
   download: '<path d="M10 3v9"/><path d="M6 9l4 4 4-4"/><path d="M4 16h12"/>',
+  info: '<circle cx="10" cy="10" r="7"/><path d="M10 9v4"/><circle cx="10" cy="6.5" r="1" fill="currentColor" stroke="none"/>',
 };
 
 const TAB_ICONS = {
@@ -201,6 +202,10 @@ function renderHome() {
       <div class="refresh-row">
         <button class="refresh" id="refresh">${svg("refresh")} 换一换</button>
       </div>
+      <div class="declaration">
+        <div class="declaration-head">${svg("info")}<span>演示声明</span></div>
+        <p>本页面所有对话均来自与 TeleAgent 的真实测试记录，仅用于向评委直观展示我队 skill 技能包的调用过程与生成结果。页面为静态演示，不连接真实模型，也不收集任何用户数据。</p>
+      </div>
     </div>`;
 
   view.querySelectorAll(".tab").forEach((tab) => {
@@ -240,6 +245,7 @@ function renderConversation() {
           <button id="homeBtn">返回首页</button>
         </div>
       </div>
+      <div class="conv-note">${svg("info")}<span>本页对话来自与 TeleAgent 的真实测试记录，仅用于向评委展示我队 skill 技能包的调用过程与结果。</span></div>
       <div class="thread" id="thread"></div>
     </div>`;
 

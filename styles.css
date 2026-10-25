@@ -681,40 +681,63 @@ button { cursor: pointer; }
 }
 .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-/* github icon tooltip */
+/* github source link */
 
-.github-btn { position: relative; text-decoration: none; }
-.github-btn .ic-svg { width: 16px; height: 16px; }
-.github-btn .gh-tip {
-  position: absolute;
-  top: calc(100% + 8px);
-  right: 0;
-  display: inline-block;
+.github-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 28px;
+  padding: 0 10px;
+  border-radius: 8px;
+  color: #4b5563;
+  font-size: 12.5px;
   text-decoration: none;
-  background: #1f2329;
-  color: #fff;
-  font-size: 11.5px;
-  line-height: 1;
-  padding: 6px 10px;
-  border-radius: 6px;
   white-space: nowrap;
-  opacity: 0;
-  transform: translateY(-3px);
-  pointer-events: none;
-  transition: opacity .15s ease, transform .15s ease;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, .18);
-  z-index: 30;
+  transition: background .15s ease, color .15s ease;
 }
-.github-btn .gh-tip::before {
-  content: "";
-  position: absolute;
-  top: -4px;
-  right: 10px;
-  border-left: 4px solid transparent;
-  border-right: 4px solid transparent;
-  border-bottom: 5px solid rgba(31, 35, 41, .94);
+.github-link:hover { background: #f0f2f5; color: #1f2329; }
+.github-link svg { flex: 0 0 auto; }
+
+/* declarations */
+
+.declaration {
+  max-width: 780px;
+  margin: 48px auto 0;
+  padding: 18px 22px;
+  background: #f8faff;
+  border: 1px solid #e3e9f5;
+  border-radius: 12px;
+  color: #5b626c;
+  font-size: 12.5px;
+  line-height: 1.8;
 }
-.github-btn:hover .gh-tip { opacity: 1; transform: translateY(0); }
+.declaration-head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 6px;
+  color: var(--blue);
+  font-size: 12.5px;
+  font-weight: 600;
+}
+.declaration-head .ic-svg { width: 15px; height: 15px; }
+.declaration p { margin: 0; }
+
+.conv-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  margin: -4px 0 16px;
+  padding: 8px 12px;
+  background: #f8faff;
+  border: 1px solid #e3e9f5;
+  border-radius: 9px;
+  color: #5b626c;
+  font-size: 12px;
+  line-height: 1.6;
+}
+.conv-note .ic-svg { width: 14px; height: 14px; margin-top: 2px; flex: 0 0 14px; color: var(--blue); }
 
 /* preview modal */
 
@@ -833,4 +856,6 @@ button { cursor: pointer; }
   .preview-window { height: 100vh; border-radius: 0; }
   .preview-body { padding: 12px; }
   .paper { padding: 30px 22px; }
+  .github-link { padding: 0; width: 28px; justify-content: center; }
+  .github-link span { display: none; }
 }

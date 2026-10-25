@@ -29,15 +29,19 @@ academic-writer-demo/
 index.html#preview
 ```
 
-## GitHub 源码图标
+## GitHub 源码
 
-顶栏有一个 GitHub 图标，链接到：
+顶栏有 GitHub 图标和「GitHub 源码」文字，点击打开：
 
 ```
 https://github.com/Cherry77551/teleSkill
 ```
 
-鼠标悬停会显示「GitHub 源码」提示。如果仓库是 Private，评委点开会看到 404，记得设为 Public。
+如果仓库是 Private，评委点开会看到 404，记得设为 Public。
+
+## 演示声明
+
+首页与对话页都显示声明：对话来自与 TeleAgent 的真实测试记录，仅用于向评委展示 skill 技能包的调用过程与结果；页面为静态演示，不连接真实模型，也不收集数据。
 
 ## 说明
 
