@@ -19,12 +19,11 @@
 
 window.DEMO_DATA = {
   brand: {
-    user: "用户WNGR8DKK",
-    workspace: "TeleAgent的工作空间",
+    user: "胡辣汤与豆浆不配队",
     version: "v2.7.0-rc.1",
   },
   headline: "你说我做，随时待命",
-  skill: "学术全能 · academic-writer",
+  skill: "星砚超级skill",
   autoPlay: true,
   tabs: ["做调研", "做表格", "搭应用", "写文档", "替我办"],
 
