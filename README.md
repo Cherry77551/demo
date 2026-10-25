@@ -14,42 +14,6 @@ academic-writer-demo/
 └── README.md
 ```
 
-## 替换成你们的测试对话
-
-打开 `data.js`，改 `window.DEMO_DATA`：
-
-- `brand.user` / `brand.workspace` / `brand.version`：侧栏与顶栏文字
-- `quickCards`：首页四张卡片
-- `events`：对话脚本，按顺序播放
-
-`events` 支持的步骤：
-
-```js
-{ type: "user", text: "用户说的话" }
-{ type: "thinking", text: "思考中…", duration: 900 }
-{ type: "tool", label: "读取规则", detail: "references/xxx.md", ok: true, duration: 850 }
-{ type: "assistant", text: "支持 **Markdown**、列表、代码", speed: 8 }
-{ type: "ask", questions: [
-    { header: "输出格式", question: "选哪种？", multiple: false,
-      options: [{ label: "Word", description: "推荐" }, { label: "PDF" }] }
-  ], selected: [["Word"]] }
-{ type: "file", name: "毕业论文.docx", size: "128 KB", url: "#" }
-```
-
-- `selected` 用于 `autoPlay: true` 时自动选中并继续；关掉自动播放后由观众手动点选。
-- `file.url` 为 `#` 时点击只弹提示；把真实文件放进 `assets/`，写成 `assets/xxx.docx` 即可下载。
-
-## 本地预览
-
-直接双击 `index.html` 即可（纯静态，无需服务器）。
-
-如果浏览器限制本地文件，也可以起一个本地服务：
-
-```bash
-python -m http.server 8080
-```
-
-打开 <http://localhost:8080>。
 
 
 ## 说明
