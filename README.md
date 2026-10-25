@@ -51,32 +51,6 @@ python -m http.server 8080
 
 打开 <http://localhost:8080>。
 
-## 部署到 GitHub Pages
-
-1. 在 GitHub 新建仓库，例如 `demo`（**Public**）。
-2. 把本目录所有文件推到仓库根目录（`index.html` 必须在根目录）。
-3. 仓库 → **Settings → Pages**
-   - Source 选 **Deploy from a branch**
-   - Branch 选 `main`，目录选 `/ (root)`
-   - 保存
-4. 等 1–2 分钟，访问：
-
-```
-https://cherry77551.github.io/demo/
-```
-
-命令行方式：
-
-```bash
-git init
-git add .
-git commit -m "demo page"
-git branch -M main
-git remote add origin https://github.com/Cherry77551/demo.git
-git push -u origin main
-```
-
-> 私有仓库的 Pages 需要付费计划；免费方案用 Public 仓库即可。
 
 ## 说明
 
