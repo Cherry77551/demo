@@ -533,28 +533,145 @@ function fileBadge(name) {
 
 function appendFile(thread, event) {
   const body = assistantShell(thread);
-  const link = document.createElement("a");
-  link.className = "file-card";
-  link.href = event.url || "#";
-  if (event.url && event.url !== "#") {
-    link.target = "_blank";
-    link.rel = "noopener noreferrer";
-  }
-  link.innerHTML = `
+
+  const card = document.createElement("div");
+  card.className = "file-card";
+
+  const open = document.createElement("button");
+  open.type = "button";
+  open.className = "file-open";
+  open.innerHTML = `
     <span class="file-ic">${esc(fileBadge(event.name))}</span>
     <span class="file-meta">
       <span class="file-name">${esc(event.name)}</span>
-      <span class="file-size">${esc(event.size || "")}</span>
-    </span>
-    <span class="ic">${svg("download")}</span>`;
-  if (!event.url || event.url === "#") {
-    link.addEventListener("click", (clickEvent) => {
-      clickEvent.preventDefault();
-      toast("演示文件：" + (event.name || ""));
+      <span class="file-size">${esc(event.size || "")} · 点击预览</span>
+    </span>`;
+  open.addEventListener("click", () => openPreview(event));
+  card.appendChild(open);
+
+  const dl = document.createElement("a");
+  dl.className = "file-dl";
+  dl.href = event.url || "#";
+  dl.title = "下载";
+  dl.innerHTML = svg("download");
+  if (event.url && event.url !== "#") {
+    dl.target = "_blank";
+    dl.rel = "noopener noreferrer";
+    dl.setAttribute("download", event.name || "");
+  } else {
+    dl.addEventListener("click", (e) => {
+      e.preventDefault();
+      toast("演示文件，暂无实际下载");
     });
   }
-  body.appendChild(link);
+  card.appendChild(dl);
+
+  body.appendChild(card);
   scrollBottom();
+}
+
+function inferPreview(event) {
+  const candidates = [event.previewUrl, event.url].filter(Boolean);
+  for (const candidate of candidates) {
+    if (candidate === "#") continue;
+    const ext = String(candidate).split("?")[0].split(".").pop().toLowerCase();
+    if (["html", "htm"].includes(ext)) return "html";
+    if (ext === "pdf") return "pdf";
+    if (["png", "jpg", "jpeg", "svg", "gif", "webp"].includes(ext)) return "image";
+    if (["docx", "doc"].includes(ext)) return "docx";
+  }
+  return "none";
+}
+
+async function fetchText(url) {
+  const res = await fetch(url);
+  if (!res.ok) throw new Error("HTTP " + res.status);
+  return res.text();
+}
+
+async function renderPreview(body, event) {
+  const mode = event.preview || inferPreview(event);
+  const url = event.previewUrl || event.url;
+
+  if (mode === "html") {
+    const html = event.previewHtml || (url && url !== "#" ? await fetchText(url) : "");
+    if (!html) throw new Error("no html");
+    body.innerHTML = html;
+    return;
+  }
+  if (mode === "pdf") {
+    if (!url || url === "#") throw new Error("no pdf");
+    body.innerHTML = `<iframe class="preview-frame" src="${esc(url)}" title="${esc(event.name || "PDF")}"></iframe>`;
+    return;
+  }
+  if (mode === "image") {
+    if (!url || url === "#") throw new Error("no image");
+    body.innerHTML = `<img class="preview-img" src="${esc(url)}" alt="${esc(event.name || "")}" />`;
+    return;
+  }
+  if (mode === "docx") {
+    if (url && url !== "#" && window.mammoth) {
+      const res = await fetch(url);
+      if (!res.ok) throw new Error("HTTP " + res.status);
+      const buffer = await res.arrayBuffer();
+      const result = await window.mammoth.convertToHtml({ arrayBuffer: buffer });
+      body.innerHTML = `<article class="paper">${result.value}</article>`;
+      return;
+    }
+  }
+  throw new Error("no preview");
+}
+
+function openPreview(event) {
+  const overlay = document.createElement("div");
+  overlay.className = "preview-overlay";
+  const hasDownload = event.url && event.url !== "#";
+  overlay.innerHTML = `
+    <div class="preview-window">
+      <div class="preview-head">
+        <div class="preview-title">
+          <span class="file-ic">${esc(fileBadge(event.name))}</span>
+          <span>${esc(event.name || "文件预览")}</span>
+          <span class="preview-tag">预览</span>
+        </div>
+        <div class="preview-actions">
+          <a class="preview-download" href="${hasDownload ? esc(event.url) : "#"}" ${hasDownload ? 'download target="_blank" rel="noopener noreferrer"' : ""}>${svg("download")} 下载</a>
+          <button class="preview-close" type="button" aria-label="关闭">×</button>
+        </div>
+      </div>
+      <div class="preview-body">
+        <div class="preview-loading"><span class="spinner"></span> 正在加载预览…</div>
+      </div>
+    </div>`;
+  document.body.appendChild(overlay);
+  requestAnimationFrame(() => overlay.classList.add("show"));
+
+  const onKey = (e) => {
+    if (e.key === "Escape") close();
+  };
+  const close = () => {
+    overlay.classList.remove("show");
+    document.removeEventListener("keydown", onKey);
+    setTimeout(() => overlay.remove(), 220);
+  };
+  document.addEventListener("keydown", onKey);
+  overlay.querySelector(".preview-close").addEventListener("click", close);
+  overlay.addEventListener("click", (e) => {
+    if (e.target === overlay) close();
+  });
+
+  const download = overlay.querySelector(".preview-download");
+  if (!hasDownload) {
+    download.addEventListener("click", (e) => {
+      e.preventDefault();
+      toast("演示文件，暂无实际下载");
+    });
+  }
+
+  const body = overlay.querySelector(".preview-body");
+  renderPreview(body, event).catch(() => {
+    body.innerHTML = '<div class="preview-empty">该演示文件暂未提供在线预览。<br />可以点右上角「下载」查看。</div>';
+  });
 }
 
 /* ---------------- composer & shell ---------------- */
@@ -624,4 +741,9 @@ autoResize();
 
 if (location.hash === "#demo") {
   openConversation("");
+}
+
+if (location.hash === "#preview") {
+  const firstFile = (DATA.events || []).find((event) => event.type === "file");
+  if (firstFile) openPreview(firstFile);
 }

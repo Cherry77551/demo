@@ -120,7 +120,7 @@ window.DEMO_DATA = {
       duration: 1300,
     },
 
-    { type: "file", name: "毕业论文.docx", size: "128 KB", url: "#" },
+    { type: "file", name: "毕业论文.docx", size: "128 KB", url: "#", preview: "html", previewHtml: window.SAMPLE_ARTICLE },
 
     {
       type: "assistant",
