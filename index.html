@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TeleAgent · 星辰超级智能体</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+      <linearGradient id="brandGrad" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="#5b8cff" />
+        <stop offset="1" stop-color="#8b5cf6" />
+      </linearGradient>
+    </defs>
+  </svg>
+
+  <div class="app">
+    <aside class="sidebar">
+      <div class="sb-brand">
+        <div class="sb-logo">
+          <svg viewBox="0 0 40 40">
+            <path d="M19 5 L33 35 H25.5 L19 19.5 L12.5 35 H5 Z" fill="url(#brandGrad)" />
+            <path d="M33 5 l1.5 4.2 L38.5 10.7 l-4 1.5 L33 16.4 l-1.5-4.2 L27.5 10.7 l4-1.5 Z" fill="#7aa2ff" />
+          </svg>
+        </div>
+        <div class="sb-name"><b>TeleAgent</b><span>星辰超级智能体</span></div>
+        <button class="sb-collapse" data-icon="collapse" title="收起侧栏"></button>
+      </div>
+
+      <nav class="sb-nav">
+        <button class="nav-item" data-action="home"><span class="ic" data-icon="task"></span><span>新建任务</span><span class="nav-trail ic" data-icon="search"></span></button>
+        <button class="nav-item" data-action="toast"><span class="ic" data-icon="skill"></span><span>技能·专家·应用连接</span></button>
+        <button class="nav-item" data-action="toast"><span class="ic" data-icon="chat"></span><span>即时通讯</span></button>
+        <button class="nav-item" data-action="toast"><span class="ic" data-icon="mobile"></span><span>移动端连接</span></button>
+      </nav>
+
+      <div class="sb-sep"></div>
+      <div class="sb-group"><span>置顶</span><span class="muted">(0)</span></div>
+      <div class="sb-group"><span>工作空间</span></div>
+
+      <div class="ws-head">
+        <span class="ic" data-icon="folder"></span>
+        <span class="ws-title">TeleAgent的工作空间</span>
+        <span class="muted">(3)</span>
+        <span class="ic chev" data-icon="chevron"></span>
+      </div>
+      <div class="ws-list">
+        <button class="ws-item active" data-action="demo"><span class="ws-name">技能广场上传自定...</span><span class="ws-done">已完成</span></button>
+        <button class="ws-item" data-action="demo"><span class="ws-name">mistakeB.zip答案...</span><span class="ws-done">已完成</span></button>
+        <button class="ws-item" data-action="demo"><span class="ws-name">（示例任务）智能...</span><span class="ws-done">已完成</span></button>
+      </div>
+
+      <div class="sb-user"><div class="u-avatar">用</div><span>用户WNGR8DKK</span></div>
+    </aside>
+
+    <main class="main">
+      <div class="windowbar">
+        <div class="win-left">
+          <span class="status-dot"></span>
+          <span class="ver">v2.7.0-rc.1</span>
+        </div>
+        <div class="win-right">
+          <button class="win-btn" data-icon="upload" title="上传"></button>
+          <button class="win-btn" data-icon="link" title="分享"></button>
+          <button class="win-btn bell" data-icon="bell" title="通知"><span class="badge">3</span></button>
+          <span class="win-sep"></span>
+          <button class="win-btn" title="最小化">—</button>
+          <button class="win-btn" title="最大化">▢</button>
+          <button class="win-btn" title="关闭">×</button>
+        </div>
+      </div>
+
+      <div class="view" id="view"></div>
+
+      <div class="composer-wrap">
+        <div class="composer">
+          <textarea id="prompt" rows="1" placeholder="请注意不要将涉密、敏感数据交给TeleAgent处理"></textarea>
+          <div class="composer-tools">
+            <div class="tools-left">
+              <button class="tool-chip" data-action="toast">
+                <span class="ic" data-icon="folder"></span>
+                <span>TeleAgent的工作空间</span>
+                <span class="ic chev" data-icon="chevron"></span>
+              </button>
+              <button class="tool-icon" data-action="toast" data-icon="paperclip" title="附件"></button>
+              <button class="tool-icon" data-action="toast" data-icon="globe" title="联网"></button>
+              <button class="tool-icon" data-action="toast" data-icon="sliders" title="设置"></button>
+              <button class="tool-icon" data-action="toast" data-icon="cap" title="学习模式"></button>
+              <button class="tool-chip ghost" data-action="toast">
+                <span>默认权限</span>
+                <span class="ic chev" data-icon="chevron"></span>
+              </button>
+            </div>
+            <div class="tools-right">
+              <button class="tool-chip ghost" data-action="toast">
+                <span>智能</span>
+                <span class="ic chev" data-icon="chevron"></span>
+              </button>
+              <button class="send-btn" id="send" title="发送"><span class="ic" data-icon="send"></span></button>
+            </div>
+          </div>
+        </div>
+        <div class="disclaimer">内容由 AI 自动生成，无法确保真实准确性，仅供参考</div>
+      </div>
+    </main>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
