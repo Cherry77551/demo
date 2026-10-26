@@ -433,6 +433,7 @@ async function runAsk(thread, event, token) {
   body.appendChild(card);
 
   const selections = (event.questions || []).map(() => new Set());
+  const customs = (event.questions || []).map(() => null);
 
   (event.questions || []).forEach((question, qi) => {
     const block = document.createElement("div");
@@ -481,9 +482,16 @@ async function runAsk(thread, event, token) {
       opts.appendChild(btn);
     });
 
+    const custom = document.createElement("input");
+    custom.type = "text";
+    custom.className = "ask-custom";
+    custom.placeholder = "其他 / 补充（可选）";
+    customs[qi] = custom;
+
     block.appendChild(head);
     block.appendChild(text);
     block.appendChild(opts);
+    block.appendChild(custom);
     card.appendChild(block);
   });
 
@@ -499,6 +507,7 @@ async function runAsk(thread, event, token) {
       const first = (q.options || [])[0];
       return first ? [first.label] : [];
     });
+    const customValues = event.custom || [];
     await sleep(500);
     if (token !== playToken) return;
     (event.questions || []).forEach((question, qi) => {
@@ -508,6 +517,7 @@ async function runAsk(thread, event, token) {
         const label = btn.querySelector("span");
         if (label && wanted.has(label.textContent)) btn.classList.add("selected");
       });
+      if (customs[qi] && customValues[qi]) customs[qi].value = customValues[qi];
     });
     await sleep(950);
     if (token !== playToken) return;

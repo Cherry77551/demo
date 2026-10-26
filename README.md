@@ -10,18 +10,18 @@ academic-writer-demo/
 ├── styles.css      # 样式
 ├── app.js          # 首页渲染 + 对话回放 + 文章预览
 ├── data.js         # 品牌信息、快捷卡片、对话内容
-├── assets/         # 示例文章、mammoth、需要下载的文件
+├── assets/         # 论文 docx、mammoth、需要下载的文件
 └── README.md
 ```
 
 ## 文章预览
 
-对话里生成的 `.docx` 文件卡片，点击即可在弹窗中预览：
+对话里生成的 `.docx` 文件卡片，点击即可在弹窗中预览。当前演示使用 `assets/paper.docx`（真实生成的论文），由本地 mammoth 在浏览器中转成 HTML。
 
-- `preview: "html"` + `previewHtml`：直接渲染一段 HTML 文章（最稳，示例见 `assets/sample-article.js`）
+- `preview: "docx"` + `url`：docx 预览（当前用法）
+- `preview: "html"` + `previewHtml`：直接渲染 HTML 字符串
 - `preview: "pdf"`：内嵌 PDF
 - `preview: "image"`：内嵌图片
-- `preview: "docx"` + `url`：用本地 `assets/mammoth.browser.min.js` 在浏览器里把 docx 转成 HTML
 
 直接打开文章预览（跳过对话回放）：
 
