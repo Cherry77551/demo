@@ -9,18 +9,35 @@ academic-writer-demo/
 ├── index.html      # 页面骨架（侧栏、顶栏、输入区）
 ├── styles.css      # 样式
 ├── app.js          # 首页渲染 + 对话回放 + 文章预览
-├── data.js         # 品牌信息、快捷卡片、对话内容
-├── assets/         # 论文 docx、mammoth、需要下载的文件
+├── data.js         # 品牌信息、快捷卡片、对话任务
+├── assets/         # 论文 docx/pdf、mammoth、需要下载的文件
 └── README.md
 ```
 
+## 多任务与切换
+
+`data.js` 里的 `tasks` 是任务列表。新增任务时复制一个对象：
+
+```js
+{
+  id: "task-2",
+  title: "任务名",
+  shortTitle: "侧栏显示名",
+  status: "已完成",
+  prompt: "用户的第一句话",
+  events: [ ... ]
+}
+```
+
+左侧「工作空间」会自动生成任务切换列表；首页卡片通过 `taskId` 指向任务。
+
 ## 文章预览
 
-对话里生成的 `.docx` 文件卡片，点击即可在弹窗中预览。当前演示使用 `assets/paper.docx`（真实生成的论文），由本地 mammoth 在浏览器中转成 HTML。
+对话里生成的文件卡片，点击即可在弹窗中预览。当前演示用 `assets/paper.pdf` 作为预览（由 `assets/paper.docx` 转出，公式完整），下载按钮给的是 Word 原稿。
 
-- `preview: "docx"` + `url`：docx 预览（当前用法）
+- `preview: "pdf"` + `previewUrl`：内嵌 PDF（公式完整，推荐用于 Word 交付物）
+- `preview: "docx"` + `url`：浏览器端 mammoth 渲染 docx（公式可能缺失）
 - `preview: "html"` + `previewHtml`：直接渲染 HTML 字符串
-- `preview: "pdf"`：内嵌 PDF
 - `preview: "image"`：内嵌图片
 
 直接打开文章预览（跳过对话回放）：

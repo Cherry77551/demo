@@ -23,6 +23,8 @@ const ICONS = {
   tool: '<path d="M11 2L4 11h5l-1 7 7-9h-5z" fill="currentColor" stroke="none"/>',
   download: '<path d="M10 3v9"/><path d="M6 9l4 4 4-4"/><path d="M4 16h12"/>',
   info: '<circle cx="10" cy="10" r="7"/><path d="M10 9v4"/><circle cx="10" cy="6.5" r="1" fill="currentColor" stroke="none"/>',
+  plus: '<path d="M10 4v12M4 10h12"/>',
+  dots: '<circle cx="5" cy="10" r="1.2" fill="currentColor" stroke="none"/><circle cx="10" cy="10" r="1.2" fill="currentColor" stroke="none"/><circle cx="15" cy="10" r="1.2" fill="currentColor" stroke="none"/>',
 };
 
 const TAB_ICONS = {
@@ -42,6 +44,89 @@ const toastEl = document.getElementById("toast");
 let playToken = 0;
 let autoPlay = DATA.autoPlay !== false;
 let firstPrompt = "";
+let currentTask = null;
+
+function getTask(id) {
+  return (DATA.tasks || []).find((task) => task.id === id) || null;
+}
+
+function defaultTask() {
+  return (DATA.tasks || [])[0] || null;
+}
+
+function markActiveTask() {
+  document.querySelectorAll("[data-task]").forEach((el) => {
+    el.classList.toggle("active", !!currentTask && el.dataset.task === currentTask.id);
+  });
+}
+
+function openTask(id, promptOverride) {
+  const task = getTask(id) || defaultTask();
+  if (!task) return;
+  currentTask = task;
+  firstPrompt = (promptOverride || "").trim() || task.prompt || "";
+  markActiveTask();
+  renderConversation();
+  play();
+}
+
+function renderSidebar() {
+  const section = document.getElementById("workspaceSection");
+  if (!section) return;
+  const tasks = DATA.tasks || [];
+  const items = tasks.map((task) => `
+    <button class="ws-item ${currentTask && currentTask.id === task.id ? "active" : ""}" data-task="${esc(task.id)}">
+      <span class="ws-name">${esc(task.shortTitle || task.title)}</span>
+      <span class="ws-done">${esc(task.status || "已完成")}</span>
+    </button>`).join("");
+
+  section.innerHTML = `
+    <div class="sb-group"><span>工作空间</span></div>
+    <div class="ws-group">
+      <div class="ws-group-head collapsed" data-static-group="1">
+        <span class="ic chev" data-icon="chevron"></span>
+        <span>离线版</span>
+        <span class="muted">(1)</span>
+        <span class="ws-actions">
+          <span class="ic" data-icon="refresh"></span>
+          <span class="ic" data-icon="plus"></span>
+          <span class="ic" data-icon="dots"></span>
+        </span>
+      </div>
+    </div>
+    <div class="ws-group">
+      <div class="ws-group-head" data-toggle="1">
+        <span class="ic chev" data-icon="chevron"></span>
+        <span>TeleAgent的工作空间</span>
+        <span class="muted">(${tasks.length})</span>
+      </div>
+      <div class="ws-list">${items || '<div class="ws-empty">暂无对话任务</div>'}</div>
+    </div>`;
+
+  fillIcons(section);
+
+  section.querySelectorAll("[data-task]").forEach((btn) => {
+    btn.addEventListener("click", () => openTask(btn.dataset.task));
+  });
+  section.querySelectorAll("[data-toggle]").forEach((head) => {
+    head.addEventListener("click", () => {
+      const list = head.nextElementSibling;
+      if (list && list.classList.contains("ws-list")) {
+        list.classList.toggle("collapsed");
+        head.classList.toggle("collapsed");
+      }
+    });
+  });
+  section.querySelectorAll("[data-static-group]").forEach((head) => {
+    head.addEventListener("click", () => toast("演示页面，仅展示预设内容"));
+  });
+  section.querySelectorAll("[data-static-group] .ws-actions .ic").forEach((el) => {
+    el.addEventListener("click", (event) => {
+      event.stopPropagation();
+      toast("演示页面，仅展示预设内容");
+    });
+  });
+}
 
 function svg(name) {
   return `<svg class="ic-svg" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[name] || ""}</svg>`;
@@ -218,7 +303,8 @@ function renderHome() {
   view.querySelectorAll(".card").forEach((card) => {
     card.addEventListener("click", () => {
       const item = (DATA.quickCards || [])[Number(card.dataset.card)];
-      openConversation(item && item.prompt ? item.prompt : "");
+      const task = item && item.taskId ? getTask(item.taskId) : defaultTask();
+      if (task) openTask(task.id);
     });
   });
 
@@ -260,9 +346,8 @@ function renderConversation() {
 }
 
 function openConversation(promptText) {
-  firstPrompt = (promptText || "").trim();
-  renderConversation();
-  play();
+  const task = defaultTask();
+  if (task) openTask(task.id, promptText);
 }
 
 function normalizeEvents(events) {
@@ -281,7 +366,10 @@ async function play() {
   if (!thread) return;
   thread.innerHTML = "";
 
-  for (const event of normalizeEvents(DATA.events)) {
+  const task = currentTask || defaultTask();
+  if (!task) return;
+
+  for (const event of normalizeEvents(task.events || [])) {
     if (token !== playToken) return;
     await runEvent(event, thread, token);
     if (token !== playToken) return;
@@ -642,16 +730,20 @@ function openPreview(event) {
   const overlay = document.createElement("div");
   overlay.className = "preview-overlay";
   const hasDownload = event.url && event.url !== "#";
+  const isDocx = /\.docx?$/i.test(event.name || "");
+  const isPdfPreview = event.preview === "pdf" || /\.pdf$/i.test(event.previewUrl || "");
+  const downloadLabel = isDocx ? "下载 Word" : "下载";
+  const previewLabel = isPdfPreview ? "PDF 预览" : "预览";
   overlay.innerHTML = `
     <div class="preview-window">
       <div class="preview-head">
         <div class="preview-title">
           <span class="file-ic">${esc(fileBadge(event.name))}</span>
           <span>${esc(event.name || "文件预览")}</span>
-          <span class="preview-tag">预览</span>
+          <span class="preview-tag">${previewLabel}</span>
         </div>
         <div class="preview-actions">
-          <a class="preview-download" href="${hasDownload ? esc(event.url) : "#"}" ${hasDownload ? 'download target="_blank" rel="noopener noreferrer"' : ""}>${svg("download")} 下载</a>
+          <a class="preview-download" href="${hasDownload ? esc(event.url) : "#"}" ${hasDownload ? 'download target="_blank" rel="noopener noreferrer"' : ""}>${svg("download")} ${downloadLabel}</a>
           <button class="preview-close" type="button" aria-label="关闭">×</button>
         </div>
       </div>
@@ -703,13 +795,8 @@ function submitPrompt() {
   promptEl.value = "";
   autoResize();
   const onHome = !!view.querySelector(".home");
-  if (onHome) {
-    openConversation(text);
-  } else {
-    firstPrompt = text;
-    renderConversation();
-    play();
-  }
+  const task = onHome ? defaultTask() : (currentTask || defaultTask());
+  if (task) openTask(task.id, text);
 }
 
 function bindShell() {
@@ -753,13 +840,16 @@ function syncBrand() {
 renderHome();
 bindShell();
 syncBrand();
+renderSidebar();
 autoResize();
 
 if (location.hash === "#demo") {
-  openConversation("");
+  const task = defaultTask();
+  if (task) openTask(task.id);
 }
 
 if (location.hash === "#preview") {
-  const firstFile = (DATA.events || []).find((event) => event.type === "file");
+  const task = defaultTask();
+  const firstFile = ((task && task.events) || []).find((event) => event.type === "file");
   if (firstFile) openPreview(firstFile);
 }
