@@ -264,10 +264,6 @@ function renderHome() {
       <div class="refresh-row">
         <button class="refresh" id="refresh">${svg("refresh")} 换一换</button>
       </div>
-      <div class="declaration">
-        <div class="declaration-head">${svg("info")}<span>演示声明</span></div>
-        <p>本页面所有对话均来自与 TeleAgent 的真实测试记录，并按其原始顺序自动播放，仅用于向评委直观展示我队 skill 技能包的调用过程与生成结果。页面为静态演示，不连接真实模型，也不收集任何用户数据。</p>
-      </div>
     </div>`;
 
   view.querySelectorAll(".tab").forEach((tab) => {
@@ -308,7 +304,6 @@ function renderConversation() {
           <button id="homeBtn">返回首页</button>
         </div>
       </div>
-      <div class="conv-note">${svg("info")}<span>本页对话来自与 TeleAgent 的真实测试记录，并按原始顺序自动播放，仅用于向评委展示我队 skill 技能包的调用过程与结果。</span></div>
       <div class="thread" id="thread"></div>
     </div>`;
 
