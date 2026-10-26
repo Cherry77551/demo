@@ -23,8 +23,6 @@ const ICONS = {
   tool: '<path d="M11 2L4 11h5l-1 7 7-9h-5z" fill="currentColor" stroke="none"/>',
   download: '<path d="M10 3v9"/><path d="M6 9l4 4 4-4"/><path d="M4 16h12"/>',
   info: '<circle cx="10" cy="10" r="7"/><path d="M10 9v4"/><circle cx="10" cy="6.5" r="1" fill="currentColor" stroke="none"/>',
-  plus: '<path d="M10 4v12M4 10h12"/>',
-  dots: '<circle cx="5" cy="10" r="1.2" fill="currentColor" stroke="none"/><circle cx="10" cy="10" r="1.2" fill="currentColor" stroke="none"/><circle cx="15" cy="10" r="1.2" fill="currentColor" stroke="none"/>',
 };
 
 const TAB_ICONS = {
@@ -83,18 +81,6 @@ function renderSidebar() {
   section.innerHTML = `
     <div class="sb-group"><span>工作空间</span></div>
     <div class="ws-group">
-      <div class="ws-group-head collapsed" data-static-group="1">
-        <span class="ic chev" data-icon="chevron"></span>
-        <span>离线版</span>
-        <span class="muted">(1)</span>
-        <span class="ws-actions">
-          <span class="ic" data-icon="refresh"></span>
-          <span class="ic" data-icon="plus"></span>
-          <span class="ic" data-icon="dots"></span>
-        </span>
-      </div>
-    </div>
-    <div class="ws-group">
       <div class="ws-group-head" data-toggle="1">
         <span class="ic chev" data-icon="chevron"></span>
         <span>TeleAgent的工作空间</span>
@@ -115,15 +101,6 @@ function renderSidebar() {
         list.classList.toggle("collapsed");
         head.classList.toggle("collapsed");
       }
-    });
-  });
-  section.querySelectorAll("[data-static-group]").forEach((head) => {
-    head.addEventListener("click", () => toast("演示页面，仅展示预设内容"));
-  });
-  section.querySelectorAll("[data-static-group] .ws-actions .ic").forEach((el) => {
-    el.addEventListener("click", (event) => {
-      event.stopPropagation();
-      toast("演示页面，仅展示预设内容");
     });
   });
 }
@@ -289,7 +266,7 @@ function renderHome() {
       </div>
       <div class="declaration">
         <div class="declaration-head">${svg("info")}<span>演示声明</span></div>
-        <p>本页面所有对话均来自与 TeleAgent 的真实测试记录，仅用于向评委直观展示我队 skill 技能包的调用过程与生成结果。页面为静态演示，不连接真实模型，也不收集任何用户数据。</p>
+        <p>本页面所有对话均来自与 TeleAgent 的真实测试记录，并按其原始顺序自动播放，仅用于向评委直观展示我队 skill 技能包的调用过程与生成结果。页面为静态演示，不连接真实模型，也不收集任何用户数据。</p>
       </div>
     </div>`;
 
@@ -331,7 +308,7 @@ function renderConversation() {
           <button id="homeBtn">返回首页</button>
         </div>
       </div>
-      <div class="conv-note">${svg("info")}<span>本页对话来自与 TeleAgent 的真实测试记录，仅用于向评委展示我队 skill 技能包的调用过程与结果。</span></div>
+      <div class="conv-note">${svg("info")}<span>本页对话来自与 TeleAgent 的真实测试记录，并按原始顺序自动播放，仅用于向评委展示我队 skill 技能包的调用过程与结果。</span></div>
       <div class="thread" id="thread"></div>
     </div>`;
 
