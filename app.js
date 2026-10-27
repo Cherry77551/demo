@@ -34,6 +34,9 @@ const TAB_ICONS = {
 };
 
 const DATA = window.DEMO_DATA || {};
+if (Array.isArray(window.EXTRA_TASKS)) {
+  DATA.tasks = (DATA.tasks || []).concat(window.EXTRA_TASKS);
+}
 const view = document.getElementById("view");
 const promptEl = document.getElementById("prompt");
 const sendBtn = document.getElementById("send");
@@ -151,6 +154,17 @@ function inlineMd(s) {
   return s;
 }
 
+function splitRow(line) {
+  let s = line.trim();
+  if (s.startsWith("|")) s = s.slice(1);
+  if (s.endsWith("|")) s = s.slice(0, -1);
+  return s.split("|").map((cell) => cell.trim());
+}
+
+function isTableSep(line) {
+  return /-/.test(line) && /^\s*\|?[\s:|-]+\|[\s:|-]*$/.test(line);
+}
+
 function mdToHtml(src) {
   const lines = String(src || "").replace(/\r\n/g, "\n").split("\n");
   const out = [];
@@ -222,6 +236,26 @@ function mdToHtml(src) {
       closeList();
       out.push(`<blockquote>${inlineMd(m[1])}</blockquote>`);
       i++;
+      continue;
+    }
+    if (line.includes("|") && i + 1 < lines.length && isTableSep(lines[i + 1])) {
+      closeList();
+      const headers = splitRow(line);
+      i += 2;
+      const rows = [];
+      while (i < lines.length && lines[i].includes("|") && lines[i].trim() !== "") {
+        rows.push(splitRow(lines[i]));
+        i++;
+      }
+      out.push(
+        "<table><thead><tr>" +
+          headers.map((h) => `<th>${inlineMd(h)}</th>`).join("") +
+          "</tr></thead><tbody>" +
+          rows
+            .map((r) => "<tr>" + r.map((c) => `<td>${inlineMd(c)}</td>`).join("") + "</tr>")
+            .join("") +
+          "</tbody></table>"
+      );
       continue;
     }
     closeList();
@@ -652,6 +686,7 @@ function inferPreview(event) {
     if (candidate === "#") continue;
     const ext = String(candidate).split("?")[0].split(".").pop().toLowerCase();
     if (["html", "htm"].includes(ext)) return "html";
+    if (["md", "markdown"].includes(ext)) return "markdown";
     if (ext === "pdf") return "pdf";
     if (["png", "jpg", "jpeg", "svg", "gif", "webp"].includes(ext)) return "image";
     if (["docx", "doc"].includes(ext)) return "docx";
@@ -673,6 +708,12 @@ async function renderPreview(body, event) {
     const html = event.previewHtml || (url && url !== "#" ? await fetchText(url) : "");
     if (!html) throw new Error("no html");
     body.innerHTML = html;
+    return;
+  }
+  if (mode === "markdown" || mode === "text") {
+    if (!url || url === "#") throw new Error("no text");
+    const text = await fetchText(url);
+    body.innerHTML = `<article class="paper markdown-preview">${mdToHtml(text)}</article>`;
     return;
   }
   if (mode === "pdf") {
@@ -815,13 +856,16 @@ syncBrand();
 renderSidebar();
 autoResize();
 
+const params = new URLSearchParams(location.search);
+const taskFromUrl = params.get("task");
+
 if (location.hash === "#demo") {
-  const task = defaultTask();
+  const task = getTask(taskFromUrl) || defaultTask();
   if (task) openTask(task.id);
 }
 
 if (location.hash === "#preview") {
-  const task = defaultTask();
+  const task = getTask(taskFromUrl) || defaultTask();
   const firstFile = ((task && task.events) || []).find((event) => event.type === "file");
   if (firstFile) openPreview(firstFile);
 }

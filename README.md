@@ -9,14 +9,15 @@ academic-writer-demo/
 ├── index.html      # 页面骨架（侧栏、顶栏、输入区）
 ├── styles.css      # 样式
 ├── app.js          # 首页渲染 + 对话回放 + 文章预览
-├── data.js         # 品牌信息、快捷卡片、对话任务
+├── data.js         # 品牌信息、快捷卡片、第一个任务
+├── data-tasks.js   # 其余对话任务（EXTRA_TASKS）
 ├── assets/         # 论文 docx/pdf、mammoth、需要下载的文件
 └── README.md
 ```
 
 ## 多任务与切换
 
-`data.js` 里的 `tasks` 是任务列表。新增任务时复制一个对象：
+任务分两处：`data.js` 里的 `tasks`（第一个任务）和 `data-tasks.js` 里的 `EXTRA_TASKS`。新增任务时复制一个对象：
 
 ```js
 {
@@ -31,14 +32,22 @@ academic-writer-demo/
 
 左侧「工作空间」会自动生成任务切换列表；首页卡片通过 `taskId` 指向任务。
 
+直接打开某个任务：
+
+```
+index.html?task=revision#demo
+index.html?task=english#preview
+```
+
 ## 文章预览
 
 对话里生成的文件卡片，点击即可在弹窗中预览。当前演示用 `assets/paper.pdf` 作为预览（由 `assets/paper.docx` 转出，公式完整），下载按钮给的是 Word 原稿。
 
 - `preview: "pdf"` + `previewUrl`：内嵌 PDF（公式完整，推荐用于 Word 交付物）
 - `preview: "docx"` + `url`：浏览器端 mammoth 渲染 docx（公式可能缺失）
+- `preview: "markdown"` + `previewUrl`：渲染 Markdown（文献综述的两个 md）
+- `preview: "image"`：内嵌图片（光伏与电价分析图）
 - `preview: "html"` + `previewHtml`：直接渲染 HTML 字符串
-- `preview: "image"`：内嵌图片
 
 直接打开文章预览（跳过对话回放）：
 
