@@ -496,6 +496,42 @@ button { cursor: pointer; }
   white-space: pre-wrap;
   overflow-wrap: anywhere;
 }
+.user-files { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 8px; }
+.user-file {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  max-width: 100%;
+  background: #fff;
+  border: 1px solid var(--line-strong);
+  border-radius: 9px;
+  padding: 8px 11px;
+  color: var(--ink);
+  font-size: 12.5px;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color .15s ease, background .15s ease;
+}
+.user-file:hover { border-color: #b9cdfb; background: #f8fbff; }
+.uf-badge {
+  flex: 0 0 auto;
+  background: var(--blue-soft);
+  color: var(--blue);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: .3px;
+  padding: 3px 5px;
+  border-radius: 4px;
+}
+.uf-meta { display: flex; flex-direction: column; min-width: 0; }
+.uf-name {
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 220px;
+}
+.uf-hint { font-size: 10.5px; color: var(--muted); }
 
 .turn.assistant .avatar {
   width: 30px; height: 30px;
@@ -894,6 +930,16 @@ button { cursor: pointer; }
   font-size: .9em;
 }
 .markdown-preview pre code { background: none; padding: 0; }
+.markdown-preview pre.raw-text {
+  background: #f8f9fb;
+  color: var(--ink);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 14px 16px;
+  white-space: pre-wrap;
+  font-size: 12.5px;
+  line-height: 1.7;
+}
 
 /* responsive */
 

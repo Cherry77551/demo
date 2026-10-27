@@ -387,7 +387,7 @@ async function play() {
 async function runEvent(event, thread, token) {
   switch (event.type) {
     case "user":
-      appendUser(thread, event.text);
+      appendUser(thread, event);
       break;
     case "thinking":
       await runThinking(thread, event);
@@ -410,12 +410,37 @@ async function runEvent(event, thread, token) {
   scrollBottom();
 }
 
-function appendUser(thread, text) {
+function appendUser(thread, event) {
   const wrap = document.createElement("div");
   wrap.className = "turn user";
   const bubble = document.createElement("div");
   bubble.className = "bubble";
-  bubble.textContent = text || "";
+
+  if (Array.isArray(event.files) && event.files.length) {
+    const files = document.createElement("div");
+    files.className = "user-files";
+    event.files.forEach((file) => {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "user-file";
+      btn.innerHTML = `
+        <span class="uf-badge">${esc(fileBadge(file.name))}</span>
+        <span class="uf-meta">
+          <span class="uf-name">${esc(file.name)}</span>
+          <span class="uf-hint">${esc(file.size || "")} · 点击预览</span>
+        </span>`;
+      btn.addEventListener("click", () => openPreview(file));
+      files.appendChild(btn);
+    });
+    bubble.appendChild(files);
+  }
+
+  if (event.text) {
+    const p = document.createElement("p");
+    p.textContent = event.text;
+    bubble.appendChild(p);
+  }
+
   wrap.appendChild(bubble);
   thread.appendChild(wrap);
   scrollBottom();
@@ -710,7 +735,13 @@ async function renderPreview(body, event) {
     body.innerHTML = html;
     return;
   }
-  if (mode === "markdown" || mode === "text") {
+  if (mode === "text") {
+    if (!url || url === "#") throw new Error("no text");
+    const text = await fetchText(url);
+    body.innerHTML = `<article class="paper markdown-preview"><pre class="raw-text">${esc(text)}</pre></article>`;
+    return;
+  }
+  if (mode === "markdown") {
     if (!url || url === "#") throw new Error("no text");
     const text = await fetchText(url);
     body.innerHTML = `<article class="paper markdown-preview">${mdToHtml(text)}</article>`;

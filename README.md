@@ -32,6 +32,15 @@ academic-writer-demo/
 
 左侧「工作空间」会自动生成任务切换列表；首页卡片通过 `taskId` 指向任务。
 
+`user` 事件可带 `files`，在用户气泡里显示上传的文档并支持点击预览：
+
+```js
+{ type: "user", text: "请按批注修改", files: [
+  { name: "导师批注.docx", size: "303 KB", url: "assets/advisor-comments.docx",
+    preview: "pdf", previewUrl: "assets/advisor-comments.pdf" }
+] }
+```
+
 直接打开某个任务：
 
 ```

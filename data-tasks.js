@@ -1,3 +1,4 @@
+// user 事件可带 files: [{ name, size, url, preview, previewUrl }]，会显示在用户气泡里。
 window.EXTRA_TASKS = [
   {
     id: "revision",
@@ -6,7 +7,19 @@ window.EXTRA_TASKS = [
     status: "已完成",
     prompt: "请按批注逐条修改，输出修订说明回执表",
     events: [
-      { type: "user", text: "请按批注逐条修改，输出修订说明回执表（上传：导师批注.docx）" },
+      {
+        type: "user",
+        text: "请按批注逐条修改，输出修订说明回执表",
+        files: [
+          {
+            name: "导师批注.docx",
+            size: "303 KB",
+            url: "assets/advisor-comments.docx",
+            preview: "pdf",
+            previewUrl: "assets/advisor-comments.pdf",
+          },
+        ],
+      },
       { type: "thinking", text: "正在解析导师批注与修订…", duration: 1000 },
       { type: "tool", label: "解析导师批注", detail: "2 条批注 + 2 处修订", duration: 800 },
       {
@@ -42,7 +55,19 @@ window.EXTRA_TASKS = [
     status: "已完成",
     prompt: "分析数据做可视化图表",
     events: [
-      { type: "user", text: "分析数据做可视化图表（上传：某天光伏与电价相关数据.csv）" },
+      {
+        type: "user",
+        text: "分析数据做可视化图表",
+        files: [
+          {
+            name: "某天光伏与电价相关数据.csv",
+            size: "0.5 KB",
+            url: "assets/pv-price-data.csv",
+            preview: "text",
+            previewUrl: "assets/pv-price-data.csv",
+          },
+        ],
+      },
       { type: "thinking", text: "正在读取数据并判断图表方案…", duration: 1000 },
       { type: "tool", label: "读取 CSV", detail: "24 小时负荷 / 光伏出力 / 分时电价", duration: 700 },
       {
