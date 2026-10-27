@@ -200,6 +200,18 @@ function mdToHtml(src) {
       continue;
     }
     if (/^\s*$/.test(line)) {
+      if (list) {
+        let j = i + 1;
+        while (j < lines.length && /^\s*$/.test(lines[j])) j++;
+        const next = lines[j] || "";
+        const same =
+          (list === "ol" && /^\s*\d+[.)]\s+/.test(next)) ||
+          (list === "ul" && /^\s*[-*+]\s+/.test(next));
+        if (same) {
+          i = j;
+          continue;
+        }
+      }
       closeList();
       i++;
       continue;
@@ -395,6 +407,12 @@ async function runEvent(event, thread, token) {
     case "tool":
       await runTool(thread, event);
       break;
+    case "exec":
+      runExec(thread, event);
+      break;
+    case "reasoning":
+      runReasoning(thread, event);
+      break;
     case "assistant":
       await runAssistant(thread, event, token);
       break;
@@ -476,6 +494,37 @@ async function runThinking(thread, event) {
     const turn = body.closest(".turn");
     if (turn) turn.remove();
   }
+}
+
+function runExec(thread, event) {
+  const body = assistantShell(thread);
+  const el = document.createElement("div");
+  el.className = "exec";
+  el.innerHTML = `
+    <div class="exec-head">
+      <span class="exec-chev">⌄</span>
+      <span class="exec-check">✓</span>
+      <span class="exec-title">${esc(event.title || "已完成本轮思考与执行")}</span>
+      <span class="exec-meta">${esc(event.time || "")}${event.time ? " 完成" : ""}${event.duration ? " · 耗时 " + esc(event.duration) : ""}</span>
+    </div>`;
+  body.appendChild(el);
+  scrollBottom();
+}
+
+function runReasoning(thread, event) {
+  const body = assistantShell(thread);
+  const el = document.createElement("div");
+  el.className = "exec reasoning";
+  el.innerHTML = `
+    <div class="exec-head">
+      <span class="exec-chev">⌄</span>
+      <span class="exec-check">✓</span>
+      <span class="exec-title">深度思考</span>
+      <span class="exec-meta">${esc(event.time || "")}${event.time ? " 完成" : ""}${event.duration ? " · 耗时 " + esc(event.duration) : ""}</span>
+    </div>
+    <div class="exec-body">${mdToHtml(event.text || "")}</div>`;
+  body.appendChild(el);
+  scrollBottom();
 }
 
 async function runTool(thread, event) {
